@@ -26,6 +26,13 @@ struct elf_handle *elf_init(char *file)
     fread(buffer, sizeof buffer, 1, ret->fp);
     fseek(ret->fp, 0, SEEK_SET);
 
+    if (strncmp(buffer, "\x7f\x45\x4c\x46", 4)) {
+        fclose(ret->fp);
+        free(ret);
+        fprintf(stderr, "%s is not an elf\n", file);
+        exit(1);
+    }
+
     if (buffer[EI_CLASS] == ELFCLASS32) {
         Elf32_Shdr *stmp;
 
